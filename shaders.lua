@@ -18,6 +18,7 @@ local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 local SHADER_KEY = Enum.KeyCode.F4
 local HUB_KEY = Enum.KeyCode.RightShift
 local GUI_NAME = "__NVIDIA_RTX_HUB_V4"
+local CINEMA_OVERLAY_NAME = "__RTX_CINEMA_OVERLAY_V4"
 
 local MANAGED_NAMES = {
     ColorCorrection = "__RTX_CC_V4",
@@ -177,6 +178,12 @@ local DEFAULT_CONFIG = {
         AdaptSpeed = 0.07,
         UpdateInterval = 1 / 24,
     },
+    CinemaOverlay = {
+        Enabled = false,
+        VignetteOpacity = 0.18,
+        LetterboxOpacity = 0,
+        EdgeSize = 0.18,
+    },
     LocalLightInfluence = {
         Enabled = false,
         Radius = 90,
@@ -328,68 +335,68 @@ local PRESET_LIBRARY = {
         },
     },
     Realism = {
-        Tag = "Natural",
-        Description = "Overcast photoreal grade with cooler daylight balance, heavier cloud cover and softer physically plausible outdoor light.",
+        Tag = "Filmic natural",
+        Description = "Author-style photoreal overcast grade: deeper contact shadows, cool shadow bias, restrained highlights and atmospheric depth.",
         Color = Color3.fromRGB(180, 219, 198),
         Config = {
             Lighting = {
                 LightingStyle = Enum.LightingStyle.Realistic,
                 PrioritizeLightingQuality = true,
-                Brightness = 1.62,
-                ExposureCompensation = -0.34,
-                EnvironmentDiffuseScale = 0.92,
-                EnvironmentSpecularScale = 0.76,
-                Ambient = Color3.fromRGB(10, 12, 16),
-                OutdoorAmbient = Color3.fromRGB(34, 40, 48),
-                ColorShift_Top = Color3.fromRGB(220, 226, 234),
-                ColorShift_Bottom = Color3.fromRGB(32, 38, 46),
-                ShadowSoftness = 0.42,
+                Brightness = 1.48,
+                ExposureCompensation = -0.31,
+                EnvironmentDiffuseScale = 0.58,
+                EnvironmentSpecularScale = 0.88,
+                Ambient = Color3.fromRGB(5, 7, 10),
+                OutdoorAmbient = Color3.fromRGB(38, 43, 52),
+                ColorShift_Top = Color3.fromRGB(232, 232, 228),
+                ColorShift_Bottom = Color3.fromRGB(22, 27, 36),
+                ShadowSoftness = 0.27,
             },
             ColorCorrection = {
-                Brightness = -0.02,
-                Contrast = 0.04,
-                Saturation = -0.015,
-                TintColor = Color3.fromRGB(236, 240, 245),
+                Brightness = -0.018,
+                Contrast = 0.115,
+                Saturation = -0.035,
+                TintColor = Color3.fromRGB(230, 235, 240),
             },
             ColorGrading = {
                 Enabled = true,
                 TonemapperPreset = Enum.TonemapperPreset.Default,
             },
             Bloom = {
-                Intensity = 0.008,
-                Size = 10,
-                Threshold = 3,
+                Intensity = 0.028,
+                Size = 32,
+                Threshold = 1.92,
             },
             SunRays = {
-                Intensity = 0,
-                Spread = 0.4,
+                Intensity = 0.012,
+                Spread = 0.82,
             },
             Atmosphere = {
-                Density = 0.23,
-                Offset = 0.035,
-                Color = Color3.fromRGB(190, 198, 210),
-                Decay = Color3.fromRGB(74, 82, 94),
-                Glare = 0,
-                Haze = 0.72,
+                Density = 0.285,
+                Offset = 0.02,
+                Color = Color3.fromRGB(204, 211, 220),
+                Decay = Color3.fromRGB(82, 90, 104),
+                Glare = 0.018,
+                Haze = 1.08,
             },
             DepthOfField = {
-                Enabled = false,
-                FarIntensity = 0.02,
-                NearIntensity = 0.008,
-                FocusDistance = 135,
-                InFocusRadius = 94,
+                Enabled = true,
+                FarIntensity = 0.018,
+                NearIntensity = 0.004,
+                FocusDistance = 165,
+                InFocusRadius = 120,
             },
             Terrain = {
-                WaterWaveSize = 0.055,
-                WaterWaveSpeed = 6.8,
-                WaterReflectance = 0.52,
-                WaterColor = Color3.fromRGB(16, 24, 34),
+                WaterWaveSize = 0.038,
+                WaterWaveSpeed = 5.2,
+                WaterReflectance = 0.64,
+                WaterColor = Color3.fromRGB(13, 21, 30),
             },
             Clouds = {
                 Enabled = true,
-                Cover = 0.74,
-                Density = 0.86,
-                Color = Color3.fromRGB(226, 230, 236),
+                Cover = 0.84,
+                Density = 0.74,
+                Color = Color3.fromRGB(215, 220, 227),
             },
             Sky = {
                 Enabled = true,
@@ -404,73 +411,84 @@ local PRESET_LIBRARY = {
                 SkyboxUp = "",
             },
             Autofocus = {
-                Enabled = false,
+                Enabled = true,
+                MinDistance = 8,
+                MaxDistance = 900,
+                UpdateInterval = 1 / 48,
+                LerpAlpha = 0.2,
             },
             AutoExposure = {
                 Enabled = true,
-                MinExposure = -0.48,
-                MaxExposure = -0.16,
-                SkyDarkening = 0.055,
-                IndoorLift = 0.075,
-                AdaptSpeed = 0.055,
-                UpdateInterval = 1 / 24,
+                MinExposure = -0.62,
+                MaxExposure = -0.06,
+                SkyDarkening = 0.13,
+                IndoorLift = 0.12,
+                AdaptSpeed = 0.1,
+                UpdateInterval = 1 / 45,
+            },
+            CinemaOverlay = {
+                Enabled = true,
+                VignetteOpacity = 0.26,
+                LetterboxOpacity = 0.08,
+                EdgeSize = 0.2,
             },
             LocalLightInfluence = {
                 Enabled = true,
-                Radius = 105,
-                MaxLights = 30,
-                ScanBudget = 150,
-                UpdateInterval = 0.24,
-                TintStrength = 0.18,
-                BloomStrength = 0.065,
-                ExposureStrength = 0.04,
-                ReflectionBoost = 0.24,
-                AdaptSpeed = 0.18,
+                Radius = 145,
+                MaxLights = 90,
+                ScanBudget = 1200,
+                UpdateInterval = 1 / 45,
+                TintStrength = 0.22,
+                BloomStrength = 0.09,
+                ExposureStrength = 0.055,
+                ReflectionBoost = 0.34,
+                AdaptSpeed = 0.28,
             },
             Reflections = {
-                Multiplier = 1.34,
-                DefaultReflectance = 0.052,
-                Radius = 310,
-                MaxParts = 260,
-                SelectionMultiplier = 1.65,
-                QueryMaxParts = 480,
-                NearMaxParts = 220,
-                MinPartSize = 0.7,
+                Multiplier = 1.62,
+                DefaultReflectance = 0.064,
+                Radius = 620,
+                MaxParts = 900,
+                SelectionMultiplier = 2.4,
+                QueryMaxParts = 1800,
+                NearMaxParts = 850,
+                MinPartSize = 0.38,
                 MaxTransparency = 0.985,
-                RefreshInterval = 0.95,
-                ForceRefreshInterval = 3.5,
-                MinCameraMoveForRefresh = 6,
-                MinCameraLookDeltaForRefresh = 0.03,
-                FresnelPower = 0.92,
-                AngularBoost = 1.08,
-                MaxReflectance = 0.38,
-                NearCoverageRadius = 145,
+                RefreshInterval = 0.18,
+                ForceRefreshInterval = 0.7,
+                MinCameraMoveForRefresh = 0.9,
+                MinCameraLookDeltaForRefresh = 0.004,
+                MinLightBoostRefreshDelta = 0.01,
+                FresnelPower = 0.88,
+                AngularBoost = 1.22,
+                MaxReflectance = 0.48,
+                NearCoverageRadius = 285,
                 MaterialReflectance = {
-                    [Enum.Material.Plastic] = 0.066,
-                    [Enum.Material.SmoothPlastic] = 0.092,
-                    [Enum.Material.Metal] = 0.25,
-                    [Enum.Material.DiamondPlate] = 0.21,
-                    [Enum.Material.Foil] = 0.3,
-                    [Enum.Material.Glass] = 0.18,
-                    [Enum.Material.Ice] = 0.16,
-                    [Enum.Material.Marble] = 0.09,
-                    [Enum.Material.Granite] = 0.062,
-                    [Enum.Material.Concrete] = 0.048,
-                    [Enum.Material.Brick] = 0.044,
-                    [Enum.Material.Cobblestone] = 0.038,
-                    [Enum.Material.Slate] = 0.054,
-                    [Enum.Material.Sandstone] = 0.034,
-                    [Enum.Material.Wood] = 0.028,
-                    [Enum.Material.WoodPlanks] = 0.034,
-                    [Enum.Material.Neon] = 0.024,
-                    [Enum.Material.Fabric] = 0.02,
-                    [Enum.Material.Asphalt] = 0.042,
-                    [Enum.Material.Basalt] = 0.055,
-                    [Enum.Material.Pavement] = 0.052,
-                    [Enum.Material.Limestone] = 0.056,
-                    [Enum.Material.Sand] = 0.018,
-                    [Enum.Material.Mud] = 0.02,
-                    [Enum.Material.Ground] = 0.022,
+                    [Enum.Material.Plastic] = 0.07,
+                    [Enum.Material.SmoothPlastic] = 0.11,
+                    [Enum.Material.Metal] = 0.32,
+                    [Enum.Material.DiamondPlate] = 0.27,
+                    [Enum.Material.Foil] = 0.36,
+                    [Enum.Material.Glass] = 0.25,
+                    [Enum.Material.Ice] = 0.22,
+                    [Enum.Material.Marble] = 0.105,
+                    [Enum.Material.Granite] = 0.075,
+                    [Enum.Material.Concrete] = 0.055,
+                    [Enum.Material.Brick] = 0.052,
+                    [Enum.Material.Cobblestone] = 0.05,
+                    [Enum.Material.Slate] = 0.07,
+                    [Enum.Material.Sandstone] = 0.045,
+                    [Enum.Material.Wood] = 0.038,
+                    [Enum.Material.WoodPlanks] = 0.046,
+                    [Enum.Material.Neon] = 0.035,
+                    [Enum.Material.Fabric] = 0.024,
+                    [Enum.Material.Asphalt] = 0.062,
+                    [Enum.Material.Basalt] = 0.078,
+                    [Enum.Material.Pavement] = 0.072,
+                    [Enum.Material.Limestone] = 0.074,
+                    [Enum.Material.Sand] = 0.026,
+                    [Enum.Material.Mud] = 0.032,
+                    [Enum.Material.Ground] = 0.035,
                     [Enum.Material.LeafyGrass] = 0.014,
                     [Enum.Material.Grass] = 0.014,
                 },
@@ -1094,6 +1112,10 @@ local function destroyManagedEffects()
     disconnectLocalLightInfluence()
     disconnectLocalLightCache()
     restoreReflections()
+    local cinemaOverlay = PlayerGui:FindFirstChild(CINEMA_OVERLAY_NAME)
+    if cinemaOverlay then
+        cinemaOverlay:Destroy()
+    end
 
     for _, name in pairs(MANAGED_NAMES) do
         local parent = name == MANAGED_NAMES.Clouds and Terrain or Lighting
@@ -1144,6 +1166,80 @@ local function ensureClouds()
     clouds.Name = MANAGED_NAMES.Clouds
     clouds.Parent = Terrain
     return clouds
+end
+
+local function makeOverlayEdge(parent, name, position, size, rotation, opacity)
+    local frame = Instance.new("Frame")
+    frame.Name = name
+    frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    frame.BackgroundTransparency = math.clamp(1 - opacity, 0, 1)
+    frame.BorderSizePixel = 0
+    frame.Position = position
+    frame.Size = size
+    frame.ZIndex = 999
+    frame.Parent = parent
+
+    local gradient = Instance.new("UIGradient")
+    gradient.Rotation = rotation
+    gradient.Transparency = NumberSequence.new({
+        NumberSequenceKeypoint.new(0, 0),
+        NumberSequenceKeypoint.new(0.72, 0.62),
+        NumberSequenceKeypoint.new(1, 1),
+    })
+    gradient.Parent = frame
+
+    return frame
+end
+
+local function applyCinemaOverlay()
+    local cfg = currentConfig.CinemaOverlay
+    local existing = PlayerGui:FindFirstChild(CINEMA_OVERLAY_NAME)
+
+    if not cfg or not cfg.Enabled then
+        if existing then
+            existing:Destroy()
+        end
+        return
+    end
+
+    local gui = existing
+    if not gui then
+        gui = Instance.new("ScreenGui")
+        gui.Name = CINEMA_OVERLAY_NAME
+        gui.IgnoreGuiInset = true
+        gui.ResetOnSpawn = false
+        gui.DisplayOrder = 999999
+        gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+        gui.Parent = PlayerGui
+    end
+
+    gui:ClearAllChildren()
+
+    local edgeSize = math.clamp(cfg.EdgeSize or 0.18, 0.05, 0.42)
+    local vignetteOpacity = math.clamp(cfg.VignetteOpacity or 0.2, 0, 0.72)
+    local letterboxOpacity = math.clamp(cfg.LetterboxOpacity or 0, 0, 0.6)
+
+    makeOverlayEdge(gui, "VignetteLeft", UDim2.fromScale(0, 0), UDim2.fromScale(edgeSize, 1), 0, vignetteOpacity)
+    makeOverlayEdge(gui, "VignetteRight", UDim2.fromScale(1 - edgeSize, 0), UDim2.fromScale(edgeSize, 1), 180, vignetteOpacity)
+    makeOverlayEdge(gui, "VignetteTop", UDim2.fromScale(0, 0), UDim2.fromScale(1, edgeSize), 90, vignetteOpacity * 0.76)
+    makeOverlayEdge(gui, "VignetteBottom", UDim2.fromScale(0, 1 - edgeSize), UDim2.fromScale(1, edgeSize), 270, vignetteOpacity * 0.76)
+
+    if letterboxOpacity > 0 then
+        local barHeight = 0.035
+        local topBar = Instance.new("Frame")
+        topBar.Name = "LetterboxTop"
+        topBar.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+        topBar.BackgroundTransparency = 1 - letterboxOpacity
+        topBar.BorderSizePixel = 0
+        topBar.Size = UDim2.fromScale(1, barHeight)
+        topBar.ZIndex = 1000
+        topBar.Parent = gui
+
+        local bottomBar = topBar:Clone()
+        bottomBar.Name = "LetterboxBottom"
+        bottomBar.Position = UDim2.fromScale(0, 1 - barHeight)
+        bottomBar.Parent = gui
+    end
 end
 
 local function collectCharacterModels()
@@ -1417,8 +1513,8 @@ local function refreshPseudoReflections()
     end
 
     local cameraPosition = camera.CFrame.Position
-    local maxParts = math.min(520, math.max(1, math.floor(currentConfig.Reflections.MaxParts or 160)))
-    local queryMaxParts = math.min(720, math.max(
+    local maxParts = math.min(1400, math.max(1, math.floor(currentConfig.Reflections.MaxParts or 160)))
+    local queryMaxParts = math.min(2600, math.max(
         maxParts,
         math.floor(currentConfig.Reflections.QueryMaxParts or (maxParts * (currentConfig.Reflections.SelectionMultiplier or 1.7)))
     ))
@@ -1862,6 +1958,7 @@ applyRuntimeConfig = function()
         restoreSavedSky()
     end
 
+    applyCinemaOverlay()
     requestReflectionRefresh()
 
     if not currentConfig.AutoExposure.Enabled then
@@ -2616,11 +2713,12 @@ local function applyGlossyBoost()
     currentConfig.Bloom.Size = math.max(currentConfig.Bloom.Size, 28)
     currentConfig.Reflections.Multiplier = math.max(currentConfig.Reflections.Multiplier, 1.82)
     currentConfig.Reflections.DefaultReflectance = math.max(currentConfig.Reflections.DefaultReflectance, 0.072)
-    currentConfig.Reflections.Radius = math.max(currentConfig.Reflections.Radius, 300)
-    currentConfig.Reflections.MaxParts = math.max(currentConfig.Reflections.MaxParts, 260)
-    currentConfig.Reflections.QueryMaxParts = math.max(currentConfig.Reflections.QueryMaxParts or 0, 440)
-    currentConfig.Reflections.NearMaxParts = math.max(currentConfig.Reflections.NearMaxParts or 0, 220)
-    currentConfig.Reflections.RefreshInterval = math.max(currentConfig.Reflections.RefreshInterval or 0, 0.95)
+    currentConfig.Reflections.Radius = math.max(currentConfig.Reflections.Radius, 560)
+    currentConfig.Reflections.MaxParts = math.max(currentConfig.Reflections.MaxParts, 760)
+    currentConfig.Reflections.QueryMaxParts = math.max(currentConfig.Reflections.QueryMaxParts or 0, 1500)
+    currentConfig.Reflections.NearMaxParts = math.max(currentConfig.Reflections.NearMaxParts or 0, 720)
+    currentConfig.Reflections.RefreshInterval = math.min(currentConfig.Reflections.RefreshInterval or 0.18, 0.18)
+    currentConfig.Reflections.ForceRefreshInterval = math.min(currentConfig.Reflections.ForceRefreshInterval or 0.7, 0.7)
     currentConfig.Reflections.MinPartSize = math.min(currentConfig.Reflections.MinPartSize, 1.25)
     currentConfig.Reflections.MaxTransparency = math.min(currentConfig.Reflections.MaxTransparency, 0.97)
     currentConfig.Reflections.MaxReflectance = math.max(currentConfig.Reflections.MaxReflectance or 0.32, 0.42)
@@ -3821,7 +3919,7 @@ local function buildHub()
         "Reflection Parts",
         "Number of nearby parts enhanced for gloss.",
         40,
-        520,
+        1400,
         0,
         function()
             return currentConfig.Reflections.MaxParts
